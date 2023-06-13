@@ -275,6 +275,23 @@ class HtmlEditorApi {
         source: 'document.body.style.color="$colorText";');
   }
 
+  Future setRtlDirection() async{
+    final election= (await getSelectedText()) ?? '';
+    if(election==''){
+      await _execCommand('"insertHTML", false, "<p dir="rtl"></p>"');
+    }else{
+      await _execCommand('"insertHTML", false, "<div dir="rtl">"$election"</div>"');
+    }
+  }
+  Future setLtrDirection() async{
+    final election= (await getSelectedText()) ?? '';
+    if(election==''){
+      await _execCommand('"insertHTML", false, "<p dir="ltr"></p>"');
+    }else{
+      await _execCommand('"insertHTML", false, "<div dir="ltr">"$election"</div>"');
+    }
+  }
+
   Future _execCommand(String command) async {
     await _webViewController.evaluateJavascript(
         source: 'document.execCommand($command);');

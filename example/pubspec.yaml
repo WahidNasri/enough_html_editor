@@ -28,13 +28,15 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.17.0
+  intl: ^0.18.0
 
 
 
 dependency_overrides:
-  enough_platform_widgets: 
-    path: ../../enough_platform_widgets
+  enough_platform_widgets:
+    git:
+      url: https://github.com/Enough-Software/enough_platform_widgets.git
+    #path: ../enough_platform_widgets
 
 dev_dependencies:
   flutter_test:
