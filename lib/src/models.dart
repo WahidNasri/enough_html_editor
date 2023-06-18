@@ -64,6 +64,11 @@ enum ElementAlign {
   justify,
 }
 
+enum ElementDirection {
+  rtl,
+  ltr
+}
+
 /// Abstracts a text selection menu item.
 class TextSelectionMenuItem {
   /// Creates a new selection menu item with the specified [label] and [action].

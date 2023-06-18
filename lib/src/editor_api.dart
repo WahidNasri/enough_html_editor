@@ -65,6 +65,9 @@ class HtmlEditorApi {
   /// Callback to be informed when the align settings have been changed
   void Function(ElementAlign)? onAlignSettingsChanged;
 
+  /// Callback to be informed when the direction settings have been changed
+  void Function(ElementDirection)? onDirectionSettingsChanged;
+
   /// Callback to be informed when the font size has been changed
   void Function(FontSize)? onFontSizeChanged;
 
@@ -275,21 +278,30 @@ class HtmlEditorApi {
         source: 'document.body.style.color="$colorText";');
   }
 
+  /// Sets the direction tp RTL
   Future setRtlDirection() async{
-    final election= (await getSelectedText()) ?? '';
-    if(election==''){
-      await _execCommand('"insertHTML", false, "<p dir="rtl"></p>"');
-    }else{
-      await _execCommand('"insertHTML", false, "<div dir="rtl">"$election"</div>"');
-    }
+    await _webViewController.evaluateJavascript(source: """
+                  var s=document.getSelection();			
+                  if(s==''){
+                      document.execCommand("insertHTML", false, "<p dir='${"rtl"}'></p>");
+                  }else{
+                      document.execCommand("insertHTML", false, "<div dir='${"rtl"}'>"+ document.getSelection()+"</div>");
+                  }
+                """);
+
   }
+
+
+  ///Sets Direction to LTR
   Future setLtrDirection() async{
-    final election= (await getSelectedText()) ?? '';
-    if(election==''){
-      await _execCommand('"insertHTML", false, "<p dir="ltr"></p>"');
-    }else{
-      await _execCommand('"insertHTML", false, "<div dir="ltr">"$election"</div>"');
-    }
+    await _webViewController.evaluateJavascript(source: """
+                  var s=document.getSelection();			
+                  if(s==''){
+                      document.execCommand("insertHTML", false, "<p dir='${"ltr"}'></p>");
+                  }else{
+                      document.execCommand("insertHTML", false, "<div dir='${"ltr"}'>"+ document.getSelection()+"</div>");
+                  }
+                """);
   }
 
   Future _execCommand(String command) async {

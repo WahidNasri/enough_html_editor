@@ -189,6 +189,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       if (textAlign == undefined && node.style != undefined && node.style.textAlign != undefined && node.style.textAlign != '') {
         textAlign = node.style.textAlign;
       }
+      
+      if (textDirection == undefined && node.style != undefined && node.style.dir != undefined && node.style.dir != '') {
+        textDirection = node.style.dir;
+      }
       node = node.parentNode;
     }
     isInList = isChildOfList;
@@ -215,6 +219,10 @@ class HtmlEditorState extends State<HtmlEditor> {
     if (textAlign != selectionTextAlign) {
       selectionTextAlign = textAlign;
       window.flutter_inappwebview.callHandler('AlignSettings', textAlign);
+    }
+    if(textDirection != selectionTextDirection) {
+      selectionTextDirection = textDirection;
+      window.flutter_inappwebview.callHandler('DirectionSettings', textDirection);
     }
     if (foregroundColor != selectionForegroundColor || backgroundColor != selectionBackgroundColor) {
       selectionForegroundColor = foregroundColor;
@@ -532,6 +540,10 @@ blockquote {
         callback: _onAlignSettingsReceived,
       )
       ..addJavaScriptHandler(
+        handlerName: 'DirectionSettings',
+        callback: _onDirectionSettingsReceived,
+      )
+      ..addJavaScriptHandler(
         handlerName: 'ColorSettings',
         callback: _onColorSettingsReceived,
       )
@@ -657,6 +669,24 @@ blockquote {
           break;
       }
       callback(align);
+    }
+  }
+  void _onDirectionSettingsReceived(List<dynamic> parameters){
+    final String? message = parameters.isNotEmpty ? parameters.first : null;
+    final callback = _api.onDirectionSettingsChanged;
+
+    if(callback != null) {
+      ElementDirection direction;
+      switch(message){
+        case 'rtl':
+        case 'RTL':
+          direction = ElementDirection.rtl;
+          break;
+        default:
+          direction = ElementDirection.ltr;
+          break;
+      }
+      callback(direction);
     }
   }
 
