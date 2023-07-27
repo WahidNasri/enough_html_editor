@@ -298,7 +298,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       selection.addRange(range);
     } 
 ''';
-  static const String _templateContinuation = '''
+  static String _templateContinuation(String dir) => '''
     isLineBreakInput = false;
   }
 
@@ -366,7 +366,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
 </script>
 </head>
-<body onload="onLoaded();">
+<body dir="$dir" onload="onLoaded();">
 <div id="editor" contenteditable="true" onfocus="onFocus();">
 ==content==
 </div>
@@ -407,7 +407,7 @@ blockquote {
   }
 
   /// Generates the editor document html from the specified [content].
-  String generateHtmlDocument(String content) {
+  String generateHtmlDocument(String content, {String bodyDir = "ltr"}) {
     final buffer = StringBuffer();
     final stylesWithMinHeight =
         styles.replaceFirst('==minHeight==', '${widget.minHeight}');
@@ -416,7 +416,7 @@ blockquote {
     if (widget.splitBlockquotes) {
       buffer.write(_templateBlockquote);
     }
-    buffer.write(_templateContinuation.replaceFirst('==content==', content));
+    buffer.write(_templateContinuation(bodyDir).replaceFirst('==content==', content));
     final html = buffer.toString();
 
     return html;

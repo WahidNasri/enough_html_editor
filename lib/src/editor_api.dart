@@ -32,6 +32,7 @@ class HtmlEditorApi {
   /// The web view controller allows direct interactions
   // ignore: unnecessary_getters_setters
   InAppWebViewController get webViewController => _webViewController;
+
   set webViewController(InAppWebViewController value) {
     _webViewController = value;
     //TODO wait for InAppWebView project to approve this
@@ -47,12 +48,14 @@ class HtmlEditorApi {
   ///
   /// Also compare [customStyles].
   String get styles => _htmlEditorState.styles;
+
   set styles(String value) => _htmlEditorState.styles = value;
 
   /// Define any custom CSS styles, ammending the default styles
   ///
   /// Also compare [styles].
   String get customStyles => _htmlEditorState.styles;
+
   //TODO if called several times, this will change the custom styles each time
   set customStyles(String value) => _htmlEditorState.styles += value;
 
@@ -278,32 +281,6 @@ class HtmlEditorApi {
         source: 'document.body.style.color="$colorText";');
   }
 
-  /// Sets the direction tp RTL
-  Future setRtlDirection() async{
-    await _webViewController.evaluateJavascript(source: """
-                  var s=document.getSelection();			
-                  if(s==''){
-                      document.execCommand("insertHTML", false, "<p dir='${"rtl"}'></p>");
-                  }else{
-                      document.execCommand("insertHTML", false, "<div dir='${"rtl"}'>"+ document.getSelection()+"</div>");
-                  }
-                """);
-
-  }
-
-
-  ///Sets Direction to LTR
-  Future setLtrDirection() async{
-    await _webViewController.evaluateJavascript(source: """
-                  var s=document.getSelection();			
-                  if(s==''){
-                      document.execCommand("insertHTML", false, "<p dir='${"ltr"}'></p>");
-                  }else{
-                      document.execCommand("insertHTML", false, "<div dir='${"ltr"}'>"+ document.getSelection()+"</div>");
-                  }
-                """);
-  }
-
   Future _execCommand(String command) async {
     await _webViewController.evaluateJavascript(
         source: 'document.execCommand($command);');
@@ -316,6 +293,10 @@ class HtmlEditorApi {
     final innerHtml = await _webViewController.evaluateJavascript(
         source: 'document.getElementById("editor").innerHTML;');
     return innerHtml;
+  }
+  Future<String> getHtml() async{
+    final html = await _webViewController.evaluateJavascript(source: "window.document.getElementsByTagName('html')[0].outerHTML;");
+  return html;
   }
 
   /// Retrieves the edited text within a complete HTML document.
@@ -394,6 +375,10 @@ class HtmlEditorApi {
     final html = _htmlEditorState.generateHtmlDocument(text);
     return _webViewController.evaluateJavascript(source: html);
   }
+
+  /// Sets the given html as inner body, replacing the previous body  completely
+  Future<void> setInnerBody(String html, String dir) =>
+      webViewController.loadData(data: _htmlEditorState.generateHtmlDocument(html, bodyDir: dir));
 
   /// Selects the HTML DOM node at the current position fully.
   Future<void> selectCurrentNode() =>
